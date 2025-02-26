@@ -20,8 +20,9 @@ export const agenda = pgTable("agenda", {
   highlighted: boolean("highlighted").notNull().default(false),
 });
 
-export const insertCountdownSchema = createInsertSchema(countdown).pick({
-  targetTime: true,
+// Update the countdown schema to handle string input
+export const insertCountdownSchema = z.object({
+  targetTime: z.string().transform((str) => new Date(str)),
 });
 
 export const insertItemSchema = createInsertSchema(items).pick({

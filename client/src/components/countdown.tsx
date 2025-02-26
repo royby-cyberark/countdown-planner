@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,15 +9,48 @@ import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import type { Countdown } from "@shared/schema";
 
+function formatTimeLeft(targetDate: Date): string {
+  const now = new Date();
+  const diff = targetDate.getTime() - now.getTime();
+
+  if (diff <= 0) {
+    return "00:00:00";
+  }
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
 export default function Countdown() {
   const [editMode, setEditMode] = useState(false);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [timeLeft, setTimeLeft] = useState("00:00:00");
   const { toast } = useToast();
 
   const { data: countdown, isLoading } = useQuery<Countdown>({
     queryKey: ["/api/countdown"],
   });
+
+  useEffect(() => {
+    if (!countdown?.targetTime) return;
+
+    const targetDate = new Date(countdown.targetTime);
+    const updateTimer = () => {
+      setTimeLeft(formatTimeLeft(targetDate));
+    };
+
+    // Update immediately
+    updateTimer();
+
+    // Then update every second
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [countdown?.targetTime]);
 
   const { mutate: setCountdown, isPending } = useMutation({
     mutationFn: async (targetTime: string) => {
@@ -89,8 +122,8 @@ export default function Countdown() {
     <div className="flex flex-col items-center space-y-4">
       {targetTime ? (
         <>
-          <div className="text-4xl font-bold">
-            {formatDistanceToNow(targetTime, { addSuffix: true })}
+          <div className="text-6xl font-bold font-mono tracking-wider">
+            {timeLeft}
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar className="h-4 w-4" />

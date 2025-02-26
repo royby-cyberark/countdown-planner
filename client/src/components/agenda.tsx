@@ -110,7 +110,7 @@ export default function AgendaComponent() {
         </Button>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {agenda.map((item) => (
           <div
             key={item.id}

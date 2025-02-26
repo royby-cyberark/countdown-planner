@@ -68,7 +68,11 @@ export class MemStorage implements IStorage {
 
   async createAgenda(agenda: InsertAgenda): Promise<Agenda> {
     const id = this.currentAgendaId++;
-    const newAgenda: Agenda = { id, ...agenda };
+    const newAgenda: Agenda = { 
+      id, 
+      ...agenda,
+      highlighted: agenda.highlighted ?? false 
+    };
     this.agenda.set(id, newAgenda);
     return newAgenda;
   }

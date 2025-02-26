@@ -100,7 +100,7 @@ export default function Agenda() {
             className={cn(
               "flex items-center gap-2 p-2 rounded-md transition-colors cursor-pointer group",
               item.highlighted
-                ? "bg-primary/10 hover:bg-primary/20"
+                ? "bg-primary/20 hover:bg-primary/40 text-white" //Increased contrast for highlighted items
                 : "bg-card hover:bg-accent/50"
             )}
             onClick={() =>

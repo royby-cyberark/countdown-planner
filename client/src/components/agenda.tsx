@@ -45,6 +45,17 @@ export default function AgendaComponent() {
       content?: string;
       highlighted?: boolean;
     }) => {
+      if (data.highlighted) {
+        // First, unset all highlighted items
+        await Promise.all(
+          agenda
+            .filter((item) => item.highlighted && item.id !== id)
+            .map((item) =>
+              apiRequest("PATCH", `/api/agenda/${item.id}`, { highlighted: false })
+            )
+        );
+      }
+      // Then update the current item
       return apiRequest("PATCH", `/api/agenda/${id}`, data);
     },
     onSuccess: () => {

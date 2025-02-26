@@ -10,7 +10,7 @@ export default function Home() {
         <Card className="border-primary/20 bg-card/95 backdrop-blur">
           <CardContent className="p-8">
             <h1 className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              Event Countdown
+              Architects Guild Countdown
             </h1>
             <Countdown />
           </CardContent>

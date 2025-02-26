@@ -72,16 +72,19 @@ export default function AgendaComponent() {
     return <div>Loading...</div>;
   }
 
-  const getItemClasses = (item: Agenda) => cn(
-    "flex items-center gap-2 p-3 rounded-lg transition-all duration-200 cursor-pointer group",
-    "border border-transparent hover:border-primary/30",
-    {
-      "bg-primary/20 hover:bg-primary/30 text-white shadow-lg shadow-primary/10": item.highlighted,
-      "bg-card/60 hover:bg-accent/30 backdrop-blur": !item.highlighted,
-    }
-  );
+  const getItemClasses = (item: Agenda) =>
+    cn(
+      "flex items-center gap-2 p-3 rounded-lg transition-all duration-200 cursor-pointer group",
+      "border border-transparent hover:border-primary/30",
+      {
+        "bg-primary/20 hover:bg-primary/30 text-white shadow-lg shadow-primary/10":
+          item.highlighted,
+        "bg-card/60 hover:bg-accent/30 backdrop-blur": !item.highlighted,
+      },
+    );
 
-  const buttonClasses = "opacity-0 group-hover:opacity-100 transition-opacity duration-200";
+  const buttonClasses =
+    "opacity-0 group-hover:opacity-100 transition-opacity duration-200";
 
   return (
     <div className="space-y-4">

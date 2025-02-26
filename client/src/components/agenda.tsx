@@ -88,7 +88,7 @@ export default function AgendaComponent() {
       "flex items-center gap-1 py-1.5 px-2 rounded-md transition-all duration-200 cursor-pointer group",
       "border border-transparent hover:border-primary/30",
       {
-        "bg-primary/20 hover:bg-primary/30 text-white shadow-sm shadow-primary/10":
+        "bg-primary/20 hover:bg-primary/30 shadow-sm shadow-primary/10":
           item.highlighted,
         "bg-card/60 hover:bg-accent/30 backdrop-blur": !item.highlighted,
       },

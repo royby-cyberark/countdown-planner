@@ -74,20 +74,20 @@ export default function AgendaComponent() {
 
   const getItemClasses = (item: Agenda) =>
     cn(
-      "flex items-center gap-2 p-3 rounded-lg transition-all duration-200 cursor-pointer group",
+      "flex items-center gap-1 py-1.5 px-2 rounded-md transition-all duration-200 cursor-pointer group",
       "border border-transparent hover:border-primary/30",
       {
-        "bg-primary/20 hover:bg-primary/30 text-white shadow-lg shadow-primary/10":
+        "bg-primary/20 hover:bg-primary/30 text-white shadow-sm shadow-primary/10":
           item.highlighted,
         "bg-card/60 hover:bg-accent/30 backdrop-blur": !item.highlighted,
       },
     );
 
   const buttonClasses =
-    "opacity-0 group-hover:opacity-100 transition-opacity duration-200";
+    "opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 w-6";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex gap-2">
         <Input
           placeholder="Add agenda item..."
@@ -98,19 +98,19 @@ export default function AgendaComponent() {
               createAgenda(newItem.trim());
             }
           }}
-          className="backdrop-blur bg-card/60"
+          className="backdrop-blur bg-card/60 h-8"
         />
         <Button
           size="icon"
           onClick={() => newItem.trim() && createAgenda(newItem.trim())}
           disabled={isCreating || !newItem.trim()}
-          className="bg-primary/80 hover:bg-primary shadow-lg shadow-primary/20"
+          className="bg-primary/80 hover:bg-primary shadow-sm shadow-primary/20 h-8 w-8"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3 w-3" />
         </Button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1">
         {agenda.map((item) => (
           <div
             key={item.id}
@@ -129,7 +129,7 @@ export default function AgendaComponent() {
                       updateAgenda({ id: item.id, content: editValue.trim() });
                     }
                   }}
-                  className="flex-1 bg-background/50"
+                  className="flex-1 bg-background/50 h-6 text-sm"
                   onClick={(e) => e.stopPropagation()}
                 />
                 <Button
@@ -142,12 +142,12 @@ export default function AgendaComponent() {
                   }}
                   className={buttonClasses}
                 >
-                  <Check className="h-4 w-4" />
+                  <Check className="h-3 w-3" />
                 </Button>
               </>
             ) : (
               <>
-                <span className="flex-1 font-medium">{item.content}</span>
+                <span className="flex-1 text-sm">{item.content}</span>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -158,7 +158,7 @@ export default function AgendaComponent() {
                     setEditValue(item.content);
                   }}
                 >
-                  <Edit2 className="h-4 w-4" />
+                  <Edit2 className="h-3 w-3" />
                 </Button>
               </>
             )}
@@ -171,7 +171,7 @@ export default function AgendaComponent() {
                 deleteAgenda(item.id);
               }}
             >
-              <X className="h-4 w-4" />
+              <X className="h-3 w-3" />
             </Button>
           </div>
         ))}

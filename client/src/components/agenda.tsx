@@ -71,6 +71,17 @@ export default function Agenda() {
     return <div>Loading...</div>;
   }
 
+  const itemClasses = cn(
+    "flex items-center gap-2 p-3 rounded-lg transition-all duration-200 cursor-pointer group",
+    "border border-transparent hover:border-primary/30",
+    (item: any) =>
+      item.highlighted
+        ? "bg-primary/20 hover:bg-primary/30 text-white shadow-lg shadow-primary/10"
+        : "bg-card/60 hover:bg-accent/30 backdrop-blur"
+  );
+
+  const buttonClasses = "opacity-0 group-hover:opacity-100 transition-opacity duration-200";
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
@@ -83,26 +94,23 @@ export default function Agenda() {
               createAgenda(newItem.trim());
             }
           }}
+          className="backdrop-blur bg-card/60"
         />
         <Button
           size="icon"
           onClick={() => newItem.trim() && createAgenda(newItem.trim())}
           disabled={isCreating || !newItem.trim()}
+          className="bg-primary/80 hover:bg-primary shadow-lg shadow-primary/20"
         >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {agenda.map((item) => (
           <div
             key={item.id}
-            className={cn(
-              "flex items-center gap-2 p-2 rounded-md transition-colors cursor-pointer group",
-              item.highlighted
-                ? "bg-primary/20 hover:bg-primary/40 text-white" //Increased contrast for highlighted items
-                : "bg-card hover:bg-accent/50"
-            )}
+            className={itemClasses(item)}
             onClick={() =>
               updateAgenda({ id: item.id, highlighted: !item.highlighted })
             }
@@ -117,7 +125,7 @@ export default function Agenda() {
                       updateAgenda({ id: item.id, content: editValue.trim() });
                     }
                   }}
-                  className="flex-1"
+                  className="flex-1 bg-background/50"
                   onClick={(e) => e.stopPropagation()}
                 />
                 <Button
@@ -128,17 +136,18 @@ export default function Agenda() {
                     editValue.trim() &&
                       updateAgenda({ id: item.id, content: editValue.trim() });
                   }}
+                  className={buttonClasses}
                 >
                   <Check className="h-4 w-4" />
                 </Button>
               </>
             ) : (
               <>
-                <span className="flex-1">{item.content}</span>
+                <span className="flex-1 font-medium">{item.content}</span>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="opacity-0 group-hover:opacity-100"
+                  className={buttonClasses}
                   onClick={(e) => {
                     e.stopPropagation();
                     setEditingId(item.id);
@@ -152,7 +161,7 @@ export default function Agenda() {
             <Button
               size="icon"
               variant="ghost"
-              className="opacity-0 group-hover:opacity-100 hover:text-destructive"
+              className={`${buttonClasses} hover:text-destructive`}
               onClick={(e) => {
                 e.stopPropagation();
                 deleteAgenda(item.id);

@@ -119,21 +119,25 @@ export default function Countdown() {
   const targetTime = countdown?.targetTime ? new Date(countdown.targetTime) : null;
 
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <div className="flex flex-col items-center space-y-6">
       {targetTime ? (
         <>
-          <div className="text-6xl font-bold font-mono tracking-wider">
+          <div className="text-7xl font-bold font-mono tracking-wider bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
             {timeLeft}
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground/80">
             <Calendar className="h-4 w-4" />
             <span>{format(targetTime, "PPPp")}</span>
           </div>
         </>
       ) : (
-        <div className="text-muted-foreground">No countdown set</div>
+        <div className="text-muted-foreground/80">No countdown set</div>
       )}
-      <Button variant="outline" onClick={() => setEditMode(true)}>
+      <Button
+        variant="outline"
+        onClick={() => setEditMode(true)}
+        className="border-primary/30 hover:border-primary/50 transition-colors"
+      >
         {targetTime ? "Edit Time" : "Set Time"}
       </Button>
     </div>

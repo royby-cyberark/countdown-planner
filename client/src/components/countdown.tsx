@@ -63,8 +63,8 @@ export default function Countdown() {
           <Button
             onClick={() => {
               if (!date || !time) return;
-              // Create an ISO string from the date and time inputs
-              const targetDate = new Date(`${date}T${time}:00Z`);
+              // Create a local date string from the date and time inputs
+              const targetDate = new Date(`${date}T${time}`);
               setCountdown(targetDate.toISOString());
             }}
             disabled={!date || !time || isPending}

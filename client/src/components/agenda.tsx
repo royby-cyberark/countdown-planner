@@ -7,14 +7,15 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
+import type { Agenda } from "@shared/schema";
 
-export default function Agenda() {
+export default function AgendaComponent() {
   const [newItem, setNewItem] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
   const { toast } = useToast();
 
-  const { data: agenda = [], isLoading } = useQuery({
+  const { data: agenda = [], isLoading } = useQuery<Agenda[]>({
     queryKey: ["/api/agenda"],
   });
 
@@ -71,13 +72,13 @@ export default function Agenda() {
     return <div>Loading...</div>;
   }
 
-  const itemClasses = cn(
+  const getItemClasses = (item: Agenda) => cn(
     "flex items-center gap-2 p-3 rounded-lg transition-all duration-200 cursor-pointer group",
     "border border-transparent hover:border-primary/30",
-    (item: any) =>
-      item.highlighted
-        ? "bg-primary/20 hover:bg-primary/30 text-white shadow-lg shadow-primary/10"
-        : "bg-card/60 hover:bg-accent/30 backdrop-blur"
+    {
+      "bg-primary/20 hover:bg-primary/30 text-white shadow-lg shadow-primary/10": item.highlighted,
+      "bg-card/60 hover:bg-accent/30 backdrop-blur": !item.highlighted,
+    }
   );
 
   const buttonClasses = "opacity-0 group-hover:opacity-100 transition-opacity duration-200";
@@ -110,7 +111,7 @@ export default function Agenda() {
         {agenda.map((item) => (
           <div
             key={item.id}
-            className={itemClasses(item)}
+            className={getItemClasses(item)}
             onClick={() =>
               updateAgenda({ id: item.id, highlighted: !item.highlighted })
             }

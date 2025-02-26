@@ -1,34 +1,39 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Plus, X, Edit2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { queryClient } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
 import type { Agenda } from "@shared/schema";
+
+const DEFAULT_AGENDA_ITEMS: Agenda[] = [
+  { id: 1, content: "10:00-10:20: Welcome and Introduction", order: 0, highlighted: true },
+  { id: 2, content: "10:20-11:10: Project Timeline Review", order: 1, highlighted: false },
+  { id: 3, content: "11:10-12:00: Technical Requirements Discussion", order: 2, highlighted: false },
+  { id: 4, content: "12:00-13:30: Lunch Break", order: 3, highlighted: false },
+  { id: 5, content: "13:30-14:20: Next Steps and Action Items", order: 4, highlighted: false },
+];
 
 export default function AgendaComponent() {
   const [newItem, setNewItem] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [localAgenda, setLocalAgenda] = useState(DEFAULT_AGENDA_ITEMS);
   const { toast } = useToast();
-
-  const { data: agenda = [], isLoading } = useQuery<Agenda[]>({
-    queryKey: ["/api/agenda"],
-  });
 
   const { mutate: createAgenda, isPending: isCreating } = useMutation({
     mutationFn: async (content: string) => {
-      return apiRequest("POST", "/api/agenda", {
+      const newItem = {
+        id: localAgenda.length + 1,
         content,
-        order: agenda.length,
+        order: localAgenda.length,
         highlighted: false,
-      });
+      };
+      setLocalAgenda(prev => [...prev, newItem]);
+      return newItem;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/agenda"] });
       setNewItem("");
       toast({
         description: "Agenda item added successfully",
@@ -45,21 +50,23 @@ export default function AgendaComponent() {
       content?: string;
       highlighted?: boolean;
     }) => {
-      if (data.highlighted) {
-        // First, unset all highlighted items
-        await Promise.all(
-          agenda
-            .filter((item) => item.highlighted && item.id !== id)
-            .map((item) =>
-              apiRequest("PATCH", `/api/agenda/${item.id}`, { highlighted: false })
-            )
-        );
-      }
-      // Then update the current item
-      return apiRequest("PATCH", `/api/agenda/${id}`, data);
+      setLocalAgenda(prev => {
+        const newAgenda = [...prev];
+        if (data.highlighted) {
+          // Unset all other highlighted items
+          newAgenda.forEach(item => {
+            if (item.id !== id) item.highlighted = false;
+          });
+        }
+        const itemIndex = newAgenda.findIndex(item => item.id === id);
+        if (itemIndex !== -1) {
+          newAgenda[itemIndex] = { ...newAgenda[itemIndex], ...data };
+        }
+        return newAgenda;
+      });
+      return { id, ...data };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/agenda"] });
       setEditingId(null);
       toast({
         description: "Agenda item updated successfully",
@@ -69,19 +76,15 @@ export default function AgendaComponent() {
 
   const { mutate: deleteAgenda } = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest("DELETE", `/api/agenda/${id}`);
+      setLocalAgenda(prev => prev.filter(item => item.id !== id));
+      return id;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/agenda"] });
       toast({
         description: "Agenda item deleted successfully",
       });
     },
   });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   const getItemClasses = (item: Agenda) =>
     cn(
@@ -122,7 +125,7 @@ export default function AgendaComponent() {
       </div>
 
       <div className="space-y-1">
-        {agenda.map((item) => (
+        {localAgenda.map((item) => (
           <div
             key={item.id}
             className={getItemClasses(item)}

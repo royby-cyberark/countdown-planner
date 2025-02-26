@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
+import type { Countdown } from "@shared/schema";
 
 export default function Countdown() {
   const [editMode, setEditMode] = useState(false);
@@ -14,12 +15,12 @@ export default function Countdown() {
   const [time, setTime] = useState("");
   const { toast } = useToast();
 
-  const { data: countdown, isLoading } = useQuery({
+  const { data: countdown, isLoading } = useQuery<Countdown>({
     queryKey: ["/api/countdown"],
   });
 
   const { mutate: setCountdown, isPending } = useMutation({
-    mutationFn: async (targetTime: Date) => {
+    mutationFn: async (targetTime: string) => {
       return apiRequest("POST", "/api/countdown", { targetTime });
     },
     onSuccess: () => {
@@ -30,10 +31,10 @@ export default function Countdown() {
         description: "Countdown updated successfully",
       });
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to update countdown",
+        description: error.message || "Failed to update countdown",
         variant: "destructive",
       });
     },
@@ -61,8 +62,10 @@ export default function Countdown() {
         <div className="flex gap-2">
           <Button
             onClick={() => {
-              const targetTime = new Date(`${date}T${time}`);
-              setCountdown(targetTime);
+              if (!date || !time) return;
+              // Create an ISO string from the date and time inputs
+              const targetDate = new Date(`${date}T${time}:00Z`);
+              setCountdown(targetDate.toISOString());
             }}
             disabled={!date || !time || isPending}
           >

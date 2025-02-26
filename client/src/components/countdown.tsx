@@ -26,7 +26,7 @@ function formatTimeLeft(targetDate: Date): string {
 
 export default function Countdown() {
   const [editMode, setEditMode] = useState(false);
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [time, setTime] = useState("");
   const [timeLeft, setTimeLeft] = useState("00:00:00");
   const { toast } = useToast();

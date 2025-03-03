@@ -26,8 +26,8 @@ function formatTimeLeft(targetDate: Date): string {
 
 export default function Countdown() {
   const [editMode, setEditMode] = useState(false);
-  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [time, setTime] = useState("");
+  const [date, setDate] = useState(localStorage.getItem("countdownDate") || format(new Date(), 'yyyy-MM-dd'));
+  const [time, setTime] = useState(localStorage.getItem("countdownTime") || "");
   const [timeLeft, setTimeLeft] = useState("00:00:00");
   const { toast } = useToast();
 
@@ -84,12 +84,18 @@ export default function Countdown() {
           <Input
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => {
+              setDate(e.target.value);
+              localStorage.setItem("countdownDate", e.target.value);
+            }}
           />
           <Input
             type="time"
             value={time}
-            onChange={(e) => setTime(e.target.value)}
+            onChange={(e) => {
+              setTime(e.target.value);
+              localStorage.setItem("countdownTime", e.target.value);
+            }}
           />
         </div>
         <div className="flex gap-2">

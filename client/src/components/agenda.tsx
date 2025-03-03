@@ -17,12 +17,17 @@ const DEFAULT_AGENDA_ITEMS: Agenda[] = [
   { id: 5, content: "13:30-14:20: Next Steps and Action Items", order: 4, highlighted: false },
 ];
 
-export default function AgendaComponent() {
+type AgendaProps = {
+  onHeaderChange: (header: string) => React.ReactNode;
+};
+
+export default function AgendaComponent({ onHeaderChange }: AgendaProps) {
   const [newItem, setNewItem] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
   const [localAgenda, setLocalAgenda] = useState(DEFAULT_AGENDA_ITEMS);
   const { toast } = useToast();
+  const [currentTab, setCurrentTab] = useState("agenda");
 
   const { mutate: createAgenda, isPending: isCreating } = useMutation({
     mutationFn: async (content: string) => {
@@ -103,10 +108,18 @@ export default function AgendaComponent() {
     "opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 w-6";
 
   return (
-    <Tabs defaultValue="agenda" className="w-full">
+    <Tabs 
+      defaultValue="agenda" 
+      className="w-full"
+      onValueChange={(value) => {
+        setCurrentTab(value);
+        onHeaderChange(value === "agenda" ? "Agenda" : "Video Player");
+      }}
+    >
+      {onHeaderChange(currentTab === "agenda" ? "Agenda" : "Video Player")}
       <TabsList className="grid w-full grid-cols-2 mb-4">
         <TabsTrigger value="agenda">Agenda</TabsTrigger>
-        <TabsTrigger value="video">Video</TabsTrigger>
+        <TabsTrigger value="video">Video Player</TabsTrigger>
       </TabsList>
       
       <TabsContent value="agenda" className="space-y-3">

@@ -1,12 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function VideoPlayer() {
-  const [videoUrl, setVideoUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState(localStorage.getItem("videoUrl") || "");
   const [embedUrl, setEmbedUrl] = useState("");
 
+  useEffect(() => {
+    if (videoUrl) {
+      const videoId = videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/v\/))([^&?]*)/)?.[1];
+      if (videoId) {
+        setEmbedUrl(`https://www.youtube.com/embed/${videoId}`);
+      }
+    }
+  }, [videoUrl]);
+
   const handleVideoSubmit = () => {
+    localStorage.setItem("videoUrl", videoUrl);
     const videoId = videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/v\/))([^&?]*)/)?.[1];
     if (videoId) {
       setEmbedUrl(`https://www.youtube.com/embed/${videoId}`);

@@ -17,6 +17,11 @@ const DEFAULT_AGENDA_ITEMS: Agenda[] = [
   { id: 5, content: "13:30-14:20: Next Steps and Action Items", order: 4, highlighted: false },
 ];
 
+const storedAgendaItems = JSON.parse(localStorage.getItem("agendaItems") || "null");
+if (!storedAgendaItems) {
+  localStorage.setItem("agendaItems", JSON.stringify(DEFAULT_AGENDA_ITEMS));
+}
+
 type AgendaProps = {
   onHeaderChange: (header: string) => React.ReactNode;
 };
@@ -25,7 +30,7 @@ export default function AgendaComponent({ onHeaderChange }: AgendaProps) {
   const [newItem, setNewItem] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
-  const [localAgenda, setLocalAgenda] = useState(DEFAULT_AGENDA_ITEMS);
+  const [localAgenda, setLocalAgenda] = useState(storedAgendaItems || DEFAULT_AGENDA_ITEMS);
   const { toast } = useToast();
   const [currentTab, setCurrentTab] = useState("agenda");
 
@@ -37,7 +42,9 @@ export default function AgendaComponent({ onHeaderChange }: AgendaProps) {
         order: localAgenda.length,
         highlighted: false,
       };
-      setLocalAgenda(prev => [...prev, newItem]);
+      const updatedAgenda = [...localAgenda, newItem];
+      setLocalAgenda(updatedAgenda);
+      localStorage.setItem("agendaItems", JSON.stringify(updatedAgenda));
       return newItem;
     },
     onSuccess: () => {
@@ -57,20 +64,19 @@ export default function AgendaComponent({ onHeaderChange }: AgendaProps) {
       content?: string;
       highlighted?: boolean;
     }) => {
-      setLocalAgenda(prev => {
-        const newAgenda = [...prev];
-        if (data.highlighted) {
-          // Unset all other highlighted items
-          newAgenda.forEach(item => {
-            if (item.id !== id) item.highlighted = false;
-          });
+      const updatedAgenda = localAgenda.map(item => {
+        if (item.id === id) {
+          return { ...item, ...data };
         }
-        const itemIndex = newAgenda.findIndex(item => item.id === id);
-        if (itemIndex !== -1) {
-          newAgenda[itemIndex] = { ...newAgenda[itemIndex], ...data };
-        }
-        return newAgenda;
+        return item;
       });
+      if (data.highlighted) {
+        updatedAgenda.forEach(item => {
+          if (item.id !== id) item.highlighted = false;
+        });
+      }
+      setLocalAgenda(updatedAgenda);
+      localStorage.setItem("agendaItems", JSON.stringify(updatedAgenda));
       return { id, ...data };
     },
     onSuccess: () => {
@@ -83,7 +89,9 @@ export default function AgendaComponent({ onHeaderChange }: AgendaProps) {
 
   const { mutate: deleteAgenda } = useMutation({
     mutationFn: async (id: number) => {
-      setLocalAgenda(prev => prev.filter(item => item.id !== id));
+      const updatedAgenda = localAgenda.filter(item => item.id !== id);
+      setLocalAgenda(updatedAgenda);
+      localStorage.setItem("agendaItems", JSON.stringify(updatedAgenda));
       return id;
     },
     onSuccess: () => {

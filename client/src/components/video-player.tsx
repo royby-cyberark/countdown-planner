@@ -20,18 +20,12 @@ export default function VideoPlayer() {
 
   useEffect(() => {
     if (videoUrl) {
+      localStorage.setItem("videoUrl", videoUrl);
       const { type, id } = parseVideoUrl(videoUrl);
       setVideoType(type);
       setVideoId(id);
     }
   }, [videoUrl]);
-
-  const handleVideoSubmit = () => {
-    localStorage.setItem("videoUrl", videoUrl);
-    const { type, id } = parseVideoUrl(videoUrl);
-    setVideoType(type);
-    setVideoId(id);
-  };
 
   const renderEmbed = () => {
     if (!videoId || !videoType) return null;
@@ -60,25 +54,12 @@ export default function VideoPlayer() {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <Input
-          placeholder="Enter YouTube or Twitter/X video URL..."
-          value={videoUrl}
-          onChange={(e) => setVideoUrl(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              handleVideoSubmit();
-            }
-          }}
-          className="backdrop-blur bg-card/60"
-        />
-        <Button
-          onClick={handleVideoSubmit}
-          className="bg-primary/80 hover:bg-primary shadow-sm shadow-primary/20"
-        >
-          Load
-        </Button>
-      </div>
+      <Input
+        placeholder="Enter YouTube or Twitter/X video URL..."
+        value={videoUrl}
+        onChange={(e) => setVideoUrl(e.target.value)}
+        className="backdrop-blur bg-card/60"
+      />
       {videoId && videoType && (
         <div className="aspect-video">
           {renderEmbed()}
